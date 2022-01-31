@@ -1,4 +1,4 @@
-# lovelace-card-boilerplate
+# ha-camera-card
 Startup setup for new lovelace (Home Assistant) card development
 
 Startet from seed  
