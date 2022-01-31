@@ -57,12 +57,14 @@ export class MyCustomCard extends LitElement {
         console.log("Hour selected:" + hour);
         this.selectedHour = hour;
         this.availableCams = Object.keys(this.gallery[this.selectedDay][this.selectedHour]) as Array<string>;
-        if(this.selectedCam != this.availableCams[0])
-            this._selectCam(this.availableCams[0]);
+        this._selectCam();
     }
 
-    private _selectCam(cam: string) :void {
-        this.selectedCam = cam;
+    private _selectCam(cam?: string) :void {
+        if(cam == undefined && this.availableCams && this.selectedCam == "")
+            cam = this.availableCams[0];                
+        if(cam)
+            this.selectedCam = cam;
         const newPics: Array<Picture> = [];
         //this.availablePics.splice(0, this.availablePics.length);
         Object.entries(this.gallery[this.selectedDay][this.selectedHour][this.selectedCam]).forEach((thisobj, index) => {
@@ -204,7 +206,12 @@ export class MyCustomCard extends LitElement {
     }
 
     protected shouldUpdate(changedProps: PropertyValues): boolean {
-        return hasConfigOrEntityChanged(this, changedProps);
+        if(changedProps.has("availableCams") || 
+            changedProps.has("selectedCam")
+        )
+            return false;
+        else
+            return hasConfigOrEntityChanged(this, changedProps);
       }
 
 
