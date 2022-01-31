@@ -1,6 +1,9 @@
 # lovelace-card-boilerplate
 Startup setup for new lovelace (Home Assistant) card development
 
+Startet from seed  
+`git clone https://github.com/maxwroc/lovelace-card-boilerplate.git your-card-name`
+
 ## What is here?
 
 * Card code written in TypeScript
@@ -47,5 +50,3 @@ Startup setup for new lovelace (Home Assistant) card development
 
     Note: The style.ts file is auto-generated
 
-5. Testing
-  ![image](https://user-images.githubusercontent.com/8268674/97108632-bf139780-16c6-11eb-82fd-2b6714c6667f.png)
