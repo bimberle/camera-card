@@ -1,17 +1,9 @@
 # ha-camera-card
 Startup setup for new lovelace (Home Assistant) card development
 
-Startet from seed  
+Startet from project  
 `git clone https://github.com/maxwroc/lovelace-card-boilerplate.git your-card-name`
 
-## What is here?
-
-* Card code written in TypeScript
-* Bundling all the files to single output
-* Map file generated, poiting to repo url (with version etc), this way debugging is possible without having source code locally
-* CSS code minimized, converted to TS and included in output bundle
-* Two bundle types: debug and crunched one
-* Teststing with Electron headless browser
 
 ## How to use it?
 
@@ -25,7 +17,7 @@ Startet from seed
     
     * Clone this repo to your box
       
-      `git clone https://github.com/maxwroc/lovelace-card-boilerplate.git your-card-name`
+      `git clone https://github.com/bimberle/ha-camera-card.git your-card-name`
 
     * Create empty repo on your git server and copy it's url
 
@@ -39,7 +31,16 @@ Startet from seed
 
     `git push origin master`
 
-4. Build
+4. Edit Copy targets
+   The build will automatically copy the relevant files to your homeassistant config directory. Edit targets to your needs:
+   ```
+   targets: [
+      { src: 'src/*', dest: '/Volumes/dockerfiles/configs/hass-config/www/custom_ui/src' },
+      { src: 'dist/*', dest: '/Volumes/dockerfiles/configs/hass-config/www/custom_ui/dist' }
+    ]
+    ```
+   
+6. Build
 
     Run `npm install` once before first build.
 
@@ -49,4 +50,12 @@ Startet from seed
     The output files are located in `dist` directory.
 
     Note: The style.ts file is auto-generated
+    
+7. Add Card to your configuration 
+   ```yaml
+     - url: /local/custom_ui/dist/my-custom-card.js
+       type: module
+   ```
+ 
+    
 
