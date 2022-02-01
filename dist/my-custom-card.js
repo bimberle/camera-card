@@ -62,20 +62,14 @@
      * SPDX-License-Identifier: BSD-3-Clause
      */var n;null!=(null===(n=window.HTMLSlotElement)||void 0===n?void 0:n.prototype.assignedElements)?(o,n)=>o.assignedElements(n):(o,n)=>o.assignedNodes(n).filter((o=>o.nodeType===Node.ELEMENT_NODE));
 
-    var styles = ".truncate{white-space:nowrap;text-overflow:ellipsis;overflow:hidden;}.card-content > div{margin-bottom:8px;}.card-content > div:last-child{margin-bottom:0;}.entity-spacing:first-child{margin-top:0;}.entity-spacing:last-child{margin-bottom:0;}.entity-row{display:flex;align-items:center;}.entity-row .name{flex:1;margin:0 6px;}.entity-row .secondary{color:var(--primary-color);}.entity-row .icon{flex:0 0 40px;border-radius:50%;text-align:center;line-height:40px;margin-right:10px;}.gallery{display:flex;flex-direction:column;}.previews{width:300px;}.smallTabs{height:20px;}";
-
-    // Check if config or Entity changed
-    function hasConfigOrEntityChanged(element, changedProps) {
-        if (changedProps.has("_config")) {
-            return true;
+    class Picture {
+        constructor(_url, _timestamp) {
+            this.url = _url;
+            this.timestamp = _timestamp;
         }
-        const oldHass = changedProps.get("hass");
-        if (oldHass) {
-            return (oldHass.states[element._config.entity] !==
-                element.hass.states[element._config.entity]);
-        }
-        return true;
     }
+
+    var styles = ".truncate{white-space:nowrap;text-overflow:ellipsis;overflow:hidden;}.card-content > div{margin-bottom:8px;}.card-content > div:last-child{margin-bottom:0;}.entity-spacing:first-child{margin-top:0;}.entity-spacing:last-child{margin-bottom:0;}.entity-row{display:flex;align-items:center;}.entity-row .name{flex:1;margin:0 6px;}.entity-row .secondary{color:var(--primary-color);}.entity-row .icon{flex:0 0 40px;border-radius:50%;text-align:center;line-height:40px;margin-right:10px;}.gallery{display:flex;flex-direction:column;}.previewPic{width:300px;padding-left:5px;}.previewPicContainerSelected{border:1px solid var(--sidebar-selected-icon-color);}.smallTabs{height:20px;}.iron-selected{color:var(--sidebar-selected-icon-color);}.fullImage{width:600px;}.archivContainer{display:flex;}.pictureContainer{padding-left:10px;flex-direction:row;display:flex;flex-wrap:wrap;}.footer{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:absolute;left:0;right:0;bottom:0;background-color:var(--ha-picture-card-background-color,rgba(0,0,0,0.3) );padding:16px;font-size:16px;line-height:16px;color:var(--ha-picture-card-text-color,white);}";
 
     /**
      * Main card class definition
@@ -83,52 +77,187 @@
     class MyCustomCard extends s {
         constructor() {
             super(...arguments);
-            this.cardTitle = "Card header";
             this.state = "";
-            this.entity = "";
-            this.selectedTab = 0;
-            this.selectedDay = "";
-            this.selectedHour = "";
-            this.selectedCam = "";
-            this.selectedPic = "";
-            this.entityObj = undefined;
-            this.gallery = undefined;
-            this.localpath = "";
-            this.localpathReplace = "config/www";
+            this.availableDays = [];
+            this.availableHours = [];
+            this.availableCams = [];
             this.availablePics = [];
+            this.selectedDay = "";
+            this.selectedHour = "Start";
+            this.selectedCam = "";
+            this.liveSelected = true;
+            this.entity = "";
+            this.entityObj = undefined;
+            this.localpath = "";
+            this.camObj = undefined;
+            this.camView = "live";
         }
-        _loadDays() {
-            this.availableDays = Object.keys(this.gallery);
-            this._selectDay(this.availableDays[0]);
+        _init() {
+            if (this.fileListobj) {
+                this.availableDays = Object.keys(this.fileListobj);
+                this._selectDay(this.availableDays[0]);
+                // Load LIVE on Reload if set
+                if (this.cam_entity)
+                    this._selectLive();
+            }
         }
-        _selectDay(tag) {
-            if (tag != '' && this.gallery) {
-                this.selectedDay = tag;
-                this.availableHours = Object.keys(this.gallery[this.selectedDay]);
+        _selectDay(day) {
+            if (day != '' && this.fileListobj) {
+                this.selectedDay = day;
+                this.availableHours = Object.keys(this.fileListobj[this.selectedDay]);
                 this._selectHour(this.availableHours[0]);
             }
         }
         _selectHour(hour) {
-            this.selectedHour = hour;
-            this.availableCams = Object.keys(this.gallery[this.selectedDay][this.selectedHour]);
-            this._selectCam(this.availableCams[0]);
+            if (hour != '' && this.fileListobj) {
+                this.selectedHour = hour;
+                this.availableCams = Object.keys(this.fileListobj[this.selectedDay][this.selectedHour]);
+                this._selectCam(this.availableCams[0]);
+            }
         }
         _selectCam(cam) {
-            this.selectedCam = cam;
-            //this.availablePics = [];
-            Object.entries(this.gallery[this.selectedDay][this.selectedHour][this.selectedCam]).forEach((thisobj, index) => {
-                var picurl = this.localpath + thisobj[1];
-                this.availablePics.push({ timestamp: thisobj[0], url: picurl });
-            });
-            // TODO
-            // this.availablePics kommt nicht bei HTML an, dort ist das Object noch alt
-            if (this.availablePics.length > 0)
-                this._selectPic(this.availablePics[0]);
+            if (cam != '' && this.fileListobj) {
+                this.selectedCam = cam;
+                const newPics = [];
+                Object.entries(this.fileListobj[this.selectedDay][this.selectedHour][this.selectedCam]).forEach((thisobj, index) => {
+                    var picurl = this.localpath + thisobj[1];
+                    newPics.push({ timestamp: thisobj[0], url: picurl });
+                });
+                this.availablePics = newPics;
+                this._selectPic(newPics[0]);
+            }
         }
         _selectPic(pic) {
-            this.selectedPic = pic.timestamp;
-            //console.log(pic);
+            this.selectedPic = pic;
+            this.liveSelected = false;
         }
+        _selectLive() {
+            //this.selectedPic = { timestamp: "LIVE", url: this.camObj.attributes.entity_picture}
+            this.availablePics = [];
+            this.liveSelected = true;
+        }
+        /**
+         * Renders the card when the update is requested (when any of the properties are changed)
+         */
+        render() {
+            if (this.availableDays) {
+                return $ `
+            <ha-card>
+                ${this.cardTitle ? $ `
+                <div class="card-header">
+                    <div class="truncate">
+                        ${this.cardTitle}
+                    </div>
+                </div>` : $ ``}
+                <div class="card-content">
+                    <div class="selectsArea">
+                        ${this.renderDays()}
+                        ${this.renderHours()}
+                        ${this.renderCams()}
+                    </div>
+                    <div class="archivContainer">
+                        <div class="previewArea">
+                            ${this.renderPreview()}
+                        </div>
+                        <div class="pictureContainer">
+                            ${this.renderPictures()}
+                        </div>
+                    </div>
+                </div>
+            </ha-card>
+            `;
+            }
+            else {
+                return $ `<div>Loading...</div>`;
+            }
+        }
+        renderDays() {
+            var _a;
+            return $ `
+        <div id='days'>
+            <paper-tabs scrollable class='smallTabs'>
+            ${this.camObj ? $ `<paper-tab @click=${() => this._selectLive()}>LIVE</paper-tab>` : $ ``}
+            ${(_a = this.availableDays) === null || _a === void 0 ? void 0 : _a.map((tag) => {
+            return $ `
+                <paper-tab @click=${() => this._selectDay(tag)}>${tag}</paper-tab>
+                `;
+        })}
+            </paper-tabs>
+        </div>
+        `;
+        }
+        renderPreview() {
+            var _a, _b;
+            if (this.liveSelected)
+                return $ `
+            <div class="fullImage">
+                <hui-image 
+                .hass=${this._hass}
+                .cameraImage=${this.cam_entity}
+                .entity=${this.cam_entity}
+                .cameraView=${this.camView}
+                ></hui-image>
+                <div class="footer">${this.camObj.attributes.friendly_name}</div>
+            </div>
+            `;
+            else
+                return $ `
+                <img src=${(_a = this.selectedPic) === null || _a === void 0 ? void 0 : _a.url} class='fullImage'>
+                <div class='previewtimestamp'>${(_b = this.selectedPic) === null || _b === void 0 ? void 0 : _b.timestamp}</div>
+        `;
+        }
+        renderHours() {
+            var _a;
+            return $ `
+        <div id='hours'>
+            <paper-tabs scrollable class='smallTabs'>
+                ${(_a = this.availableHours) === null || _a === void 0 ? void 0 : _a.map((hour) => {
+            return $ `
+                        <paper-tab @click=${() => this._selectHour(hour)}>${hour}</paper-tab>
+                        `;
+        })}
+            </paper-tabs>
+        </div>
+        `;
+        }
+        renderCams() {
+            var _a;
+            return $ `
+        <div id='cams'>
+            <paper-tabs scrollable class='smallTabs'>
+                ${(_a = this.availableCams) === null || _a === void 0 ? void 0 : _a.map((cam) => {
+            return $ `
+                        <paper-tab @click=${() => this._selectCam(cam)}>${cam}</paper-tab>
+                        `;
+        })}
+            </paper-tabs>
+        </div>
+        `;
+        }
+        renderPictures() {
+            return $ `
+            ${this.availablePics.map((pic) => {
+            var _a;
+            return $ `
+                <div @click=${() => this._selectPic(pic)} class="${pic.url == ((_a = this.selectedPic) === null || _a === void 0 ? void 0 : _a.url) ? $ `previewPicContainerSelected` : $ ``}">
+                    <div class='picBox'>
+                        <img src=${pic.url} class='previewPic'>
+                        <div class='previewtimestamp'>${pic.timestamp}</div>
+                    </div>
+                </div>`;
+        })}
+        `;
+        }
+        /*
+        protected shouldUpdate(changedProps: PropertyValues): boolean {
+            if(changedProps.has("availableCams") ||
+                changedProps.has("selectedCam")
+            )
+                return false;
+            else
+                return hasConfigOrEntityChanged(this, changedProps);
+        }
+    */
         /**
          * CSS for the card
          */
@@ -144,7 +273,15 @@
             }
             this.state = hass.states[this.entity].state;
             this.entityObj = hass.states[this.entity];
-            this.localpath = this.entityObj.attributes.path.replace(this.localpathReplace, 'local');
+            this.localpath = this.entityObj.attributes.path.replace(this.patch_replace, 'local');
+            this._hass = hass;
+            if (this.cam_entity)
+                this.camObj = hass.states[this.cam_entity];
+            // Initialize?
+            if (this.fileListobj != this.entityObj.attributes.fileList) {
+                this.fileListobj = this.entityObj.attributes.fileList;
+                this._init();
+            }
         }
         /**
          * Called every time when entity config is updated
@@ -152,87 +289,15 @@
          */
         setConfig(config) {
             this.entity = config.entity;
-            this.cardTitle = config.title || this.cardTitle;
-            this.praefixes = config.praefixes;
+            if (config.title)
+                this.cardTitle = config.title;
+            this.patch_replace = config.path_replace;
+            this.cam_entity = config.cam_entity;
         }
-        /**
-         * Renders the card when the update is requested (when any of the properties are changed)
-         */
-        render() {
-            var _a, _b, _c;
-            this.gallery = this.entityObj.attributes.fileList;
-            //var locations: Array<PictureGallery> = JSON.parse(this.gallery);
-            if (this.gallery) {
-                this._loadDays();
-                return $ `
-                <ha-card>
-                    <div class="card-header">
-                        <div class="truncate">
-                            ${this.cardTitle}
-                        </div>
-                    </div>
-                    <div class="card-content">
-            
-                        <div id='days'>
-                            <paper-tabs scrollable class='smallTabs'>
-                            ${(_a = this.availableDays) === null || _a === void 0 ? void 0 : _a.map((tag) => {
-                return $ `
-                                <paper-tab @click=${() => this._selectDay(tag)}>${tag}</paper-tab>
-                                `;
-            })}
-                            </paper-tabs>
-                        </div>
-
-                        <div id='hours'>
-                            <paper-tabs scrollable class='smallTabs'>
-                                ${(_b = this.availableHours) === null || _b === void 0 ? void 0 : _b.map((hour) => {
-                return $ `
-                                        <paper-tab @click=${() => this._selectHour(hour)}>${hour}</paper-tab>
-                                        `;
-            })}
-                            </paper-tabs>
-                        </div>
-
-                        <div id='cams'>
-                            <paper-tabs scrollable class='smallTabs'>
-                                ${(_c = this.availableCams) === null || _c === void 0 ? void 0 : _c.map((cam) => {
-                return $ `
-                                        <paper-tab @click=${() => this._selectCam(cam)}>${cam}</paper-tab>
-                                        `;
-            })}
-                            </paper-tabs>
-                        </div>
-
-                        <div id='pics'>
-                                ${this.availablePics.map((pic) => {
-                return $ `<div class='previews'><img src=${pic.url} class='previews'></img><div class='previewtimestamp'>${pic.timestamp}</div></div>`;
-            })}
-                            
-                        </div>
-                    </div>
-
-                </ha-card>
-                `;
-            }
-            else {
-                return $ `<div>Loading...</div>`;
-            }
-        }
-        shouldUpdate(changedProps) {
-            if (changedProps.has("fileList")) {
-                return true;
-            }
-            return hasConfigOrEntityChanged(this, changedProps);
-        }
-        updated(changedProps) {
-            super.updated(changedProps);
-            if (changedProps.has("hass")) {
-                this.hass.states[this._config.entity];
-                const oldHass = changedProps.get("hass");
-                oldHass
-                    ? oldHass.states[this._config.entity]
-                    : undefined;
-            }
+        connectedCallback() {
+            super.connectedCallback();
+            // INIT
+            this.availableDays = Object.keys(this.entityObj.attributes.fileList);
         }
     }
     __decorate([
@@ -243,25 +308,10 @@
     ], MyCustomCard.prototype, "state", void 0);
     __decorate([
         e({ attribute: false })
-    ], MyCustomCard.prototype, "praefixes", void 0);
+    ], MyCustomCard.prototype, "patch_replace", void 0);
     __decorate([
-        e()
-    ], MyCustomCard.prototype, "_config", void 0);
-    __decorate([
-        e({ type: Number })
-    ], MyCustomCard.prototype, "selectedTab", void 0);
-    __decorate([
-        e({ type: String })
-    ], MyCustomCard.prototype, "selectedDay", void 0);
-    __decorate([
-        e({ type: String })
-    ], MyCustomCard.prototype, "selectedHour", void 0);
-    __decorate([
-        e({ type: String })
-    ], MyCustomCard.prototype, "selectedCam", void 0);
-    __decorate([
-        e({ type: String })
-    ], MyCustomCard.prototype, "selectedPic", void 0);
+        e({ attribute: false })
+    ], MyCustomCard.prototype, "cam_entity", void 0);
     __decorate([
         e({ type: Array })
     ], MyCustomCard.prototype, "availableDays", void 0);
@@ -274,6 +324,24 @@
     __decorate([
         e({ type: Array })
     ], MyCustomCard.prototype, "availablePics", void 0);
+    __decorate([
+        e({ type: String })
+    ], MyCustomCard.prototype, "selectedDay", void 0);
+    __decorate([
+        e({ type: String })
+    ], MyCustomCard.prototype, "selectedHour", void 0);
+    __decorate([
+        e({ type: String })
+    ], MyCustomCard.prototype, "selectedCam", void 0);
+    __decorate([
+        e({ type: Picture })
+    ], MyCustomCard.prototype, "selectedPic", void 0);
+    __decorate([
+        e({ type: Boolean })
+    ], MyCustomCard.prototype, "liveSelected", void 0);
+    __decorate([
+        e()
+    ], MyCustomCard.prototype, "_config", void 0);
 
     const printVersion = () => console.info("%c MY CUSTOM CARD %c 0.1.0", "color: white; background: gray; font-weight: 700;", "color: gray; background: white; font-weight: 700;");
 
