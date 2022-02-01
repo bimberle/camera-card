@@ -71,10 +71,11 @@
 
     var styles = ".truncate{white-space:nowrap;text-overflow:ellipsis;overflow:hidden;}.card-content > div{margin-bottom:8px;}.card-content > div:last-child{margin-bottom:0;}.entity-spacing:first-child{margin-top:0;}.entity-spacing:last-child{margin-bottom:0;}.entity-row{display:flex;align-items:center;}.entity-row .name{flex:1;margin:0 6px;}.entity-row .secondary{color:var(--primary-color);}.entity-row .icon{flex:0 0 40px;border-radius:50%;text-align:center;line-height:40px;margin-right:10px;}.gallery{display:flex;flex-direction:column;}.previewPic{width:300px;padding-left:5px;}.previewPicContainerSelected{border:1px solid var(--sidebar-selected-icon-color);}.smallTabs{height:20px;}.iron-selected{color:var(--sidebar-selected-icon-color);}.fullImage{width:600px;}.archivContainer{display:flex;}.pictureContainer{padding-left:10px;flex-direction:row;display:flex;flex-wrap:wrap;}.footer{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:absolute;left:0;right:0;bottom:0;background-color:var(--ha-picture-card-background-color,rgba(0,0,0,0.3) );padding:16px;font-size:16px;line-height:16px;color:var(--ha-picture-card-text-color,white);}";
 
+    //import { hasConfigOrEntityChanged } from "../has-changed";
     /**
      * Main card class definition
      */
-    class MyCustomCard extends s {
+    class MyCameraArchiveCard extends s {
         constructor() {
             super(...arguments);
             this.state = "";
@@ -302,52 +303,52 @@
     }
     __decorate([
         e({ attribute: false })
-    ], MyCustomCard.prototype, "cardTitle", void 0);
+    ], MyCameraArchiveCard.prototype, "cardTitle", void 0);
     __decorate([
         e({ attribute: false })
-    ], MyCustomCard.prototype, "state", void 0);
+    ], MyCameraArchiveCard.prototype, "state", void 0);
     __decorate([
         e({ attribute: false })
-    ], MyCustomCard.prototype, "patch_replace", void 0);
+    ], MyCameraArchiveCard.prototype, "patch_replace", void 0);
     __decorate([
         e({ attribute: false })
-    ], MyCustomCard.prototype, "cam_entity", void 0);
+    ], MyCameraArchiveCard.prototype, "cam_entity", void 0);
     __decorate([
         e({ type: Array })
-    ], MyCustomCard.prototype, "availableDays", void 0);
+    ], MyCameraArchiveCard.prototype, "availableDays", void 0);
     __decorate([
         e({ type: Array })
-    ], MyCustomCard.prototype, "availableHours", void 0);
+    ], MyCameraArchiveCard.prototype, "availableHours", void 0);
     __decorate([
         e({ type: Array })
-    ], MyCustomCard.prototype, "availableCams", void 0);
+    ], MyCameraArchiveCard.prototype, "availableCams", void 0);
     __decorate([
         e({ type: Array })
-    ], MyCustomCard.prototype, "availablePics", void 0);
+    ], MyCameraArchiveCard.prototype, "availablePics", void 0);
     __decorate([
         e({ type: String })
-    ], MyCustomCard.prototype, "selectedDay", void 0);
+    ], MyCameraArchiveCard.prototype, "selectedDay", void 0);
     __decorate([
         e({ type: String })
-    ], MyCustomCard.prototype, "selectedHour", void 0);
+    ], MyCameraArchiveCard.prototype, "selectedHour", void 0);
     __decorate([
         e({ type: String })
-    ], MyCustomCard.prototype, "selectedCam", void 0);
+    ], MyCameraArchiveCard.prototype, "selectedCam", void 0);
     __decorate([
         e({ type: Picture })
-    ], MyCustomCard.prototype, "selectedPic", void 0);
+    ], MyCameraArchiveCard.prototype, "selectedPic", void 0);
     __decorate([
         e({ type: Boolean })
-    ], MyCustomCard.prototype, "liveSelected", void 0);
+    ], MyCameraArchiveCard.prototype, "liveSelected", void 0);
     __decorate([
         e()
-    ], MyCustomCard.prototype, "_config", void 0);
+    ], MyCameraArchiveCard.prototype, "_config", void 0);
 
-    const printVersion = () => console.info("%c MY CUSTOM CARD %c 0.1.0", "color: white; background: gray; font-weight: 700;", "color: gray; background: white; font-weight: 700;");
+    const printVersion = () => console.info("%c KECH CAMERA ARCHIVE CARD %c 0.1.0", "color: white; background: gray; font-weight: 700;", "color: gray; background: white; font-weight: 700;");
 
     // Registering card
-    customElements.define("my-custom-card", MyCustomCard);
+    customElements.define("kech-camera-archive-card", MyCameraArchiveCard);
     printVersion();
 
 })();
-//# sourceMappingURL=my-custom-card.js.map
+//# sourceMappingURL=kech-camera-archive-card.js.map

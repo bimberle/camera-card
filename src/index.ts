@@ -1,7 +1,7 @@
-import { MyCustomCard } from "./custom-element/my-custom-card";
+import { MyCameraArchiveCard } from "./custom-element/kech-camera-archive-card";
 import { printVersion } from "./utils";
 
 // Registering card
-customElements.define("my-custom-card", MyCustomCard);
+customElements.define("kech-camera-archive-card", MyCameraArchiveCard);
 
 printVersion();

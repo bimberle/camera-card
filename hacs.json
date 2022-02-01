@@ -1,5 +1,5 @@
 {
-    "name": "My card",
+    "name": "Kech Camera Archive Card",
     "render_readme": true,
-    "filename": "my-custom-card.js"
+    "filename": "kech-camera-archive-card.js"
 }

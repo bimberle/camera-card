@@ -3,12 +3,12 @@ import { html, css, LitElement, CSSResultGroup, TemplateResult, PropertyValues }
 import { property } from "lit/decorators";
 import { ICardConfig, Picture } from "../types";
 import styles from "./card.css";
-import { hasConfigOrEntityChanged } from "../has-changed";
+//import { hasConfigOrEntityChanged } from "../has-changed";
 
 /**
  * Main card class definition
  */
-export class MyCustomCard extends LitElement {
+export class MyCameraArchiveCard extends LitElement {
 
     @property({ attribute: false })
     private cardTitle?: string

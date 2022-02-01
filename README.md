@@ -1,4 +1,4 @@
-# ha-camera-card
+# kech-camera-archive-card
 Startup setup for new lovelace (Home Assistant) card development
 
 Startet from project  
@@ -53,7 +53,7 @@ Startet from project
     
 7. Add Card to your configuration 
    ```yaml
-     - url: /local/custom_ui/dist/my-custom-card.js
+     - url: /local/custom_ui/kech-camera-archive-card.js
        type: module
    ```
  
