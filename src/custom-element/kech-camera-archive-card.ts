@@ -114,6 +114,13 @@ export class MyCameraArchiveCard extends LitElement {
         this.liveSelected = true;
     }
 
+    private _isSelected(pic: Picture): TemplateResult {
+        if(pic.url == this.selectedPic?.url)
+            return html `previewPicContainerSelected`;
+        else
+            return html ``;
+    }
+
 
     
 
@@ -234,7 +241,7 @@ export class MyCameraArchiveCard extends LitElement {
         return html`
             ${this.availablePics.map((pic: Picture) => {
                 return html`
-                <div @click=${() => this._selectPic(pic)} class="${pic.url == this.selectedPic?.url ? html`previewPicContainerSelected` : html``}">
+                <div @click=${() => this._selectPic(pic)} class=${this._isSelected(pic)}>
                     <div class='picBox'>
                         <img src=${pic.url} class='previewPic'>
                         <div class='previewtimestamp'>${pic.timestamp}</div>

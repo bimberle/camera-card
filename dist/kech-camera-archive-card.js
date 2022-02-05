@@ -137,6 +137,13 @@
             this.availablePics = [];
             this.liveSelected = true;
         }
+        _isSelected(pic) {
+            var _a;
+            if (pic.url == ((_a = this.selectedPic) === null || _a === void 0 ? void 0 : _a.url))
+                return $ `previewPicContainerSelected`;
+            else
+                return $ ``;
+        }
         /**
          * Renders the card when the update is requested (when any of the properties are changed)
          */
@@ -238,9 +245,8 @@
         renderPictures() {
             return $ `
             ${this.availablePics.map((pic) => {
-            var _a;
             return $ `
-                <div @click=${() => this._selectPic(pic)} class="${pic.url == ((_a = this.selectedPic) === null || _a === void 0 ? void 0 : _a.url) ? $ `previewPicContainerSelected` : $ ``}">
+                <div @click=${() => this._selectPic(pic)} class=${this._isSelected(pic)}>
                     <div class='picBox'>
                         <img src=${pic.url} class='previewPic'>
                         <div class='previewtimestamp'>${pic.timestamp}</div>
